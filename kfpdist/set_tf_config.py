@@ -1,6 +1,7 @@
 from kubernetes import client, config
 import json
 import os
+import time
 
 def set_dist_train_config(rank, nranks, step_name, port=9888):
     wf_id = os.getenv('WORKFLOW_ID')
@@ -30,6 +31,7 @@ def set_dist_train_config(rank, nranks, step_name, port=9888):
                 podinfo = v1.read_namespaced_pod(podid, ns)
                 workers_spec.append('%s:%d' % (podinfo.status.pod_ip, port))
         worker_started = len(workers_spec)
+        time.sleep(2)
 
     # set TF_CONFIG env for tf dist train
     os.environ['TF_CONFIG'] = json.dumps({
