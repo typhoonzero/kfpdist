@@ -38,10 +38,17 @@ def set_dist_train_config(rank, nranks, step_name, port=9888):
         workers_spec = []
         for nk in nodes:
             node_info = nodes[nk]
+            print("kfpdist: searching for {}, curr node: {}, templateName: {}, type: {}".format(
+                step_name,
+                nk,
+                node_info['templateName'],
+                node_info['type']
+                )
+            )
             if node_info['templateName'] == step_name and node_info['type'] == 'Pod':
                 podid = node_info['id']
                 for input_param in node_info['inputs']['parameters']:
-                    if input_param['name'].endswith('loop-item'):
+                    if input_param['name'].find('loop-item') >= 0:
                         # FIXME: argo parameter with "loop-item" is the rank.
                         curr_rank = int(input_param['value'])
                         break

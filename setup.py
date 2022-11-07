@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="kfpdist",
-    version="0.1.4",
+    version="0.1.6",
     author="typhoonzero",
     author_email="typhoonzero@gmail.com",
     description="Use Kubeflow Pipeline to run distributed training jobs",
@@ -25,6 +25,6 @@ setuptools.setup(
     python_requires=">=3.6",
     install_requires=[
         'kubernetes',
-        'kfp==1.7.1'
+        'kfp==1.8.2'
     ]
 )
