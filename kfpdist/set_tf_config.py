@@ -3,8 +3,11 @@ import json
 import os
 import time
 import socket
+import signal
+import sys
 
-def _check_rank0(ip, port):
+def _check_rank0(ip, port, retries=100):
+    c = 0
     while True:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(2)
@@ -14,6 +17,9 @@ def _check_rank0(ip, port):
         else:
             print("waiting rank0 %s:%d to become ready..." % (ip, port))
             time.sleep(2)
+            c += 1
+            if c >= retries - 1:
+                break
         sock.close()
 
 def set_dist_train_config(rank, nranks, step_name, port=9888):
@@ -68,6 +74,16 @@ def set_dist_train_config(rank, nranks, step_name, port=9888):
         'task': {'type': 'worker', 'index': rank}
     })
     print("Setting TF_CONFIG: %s" % os.environ['TF_CONFIG'])
+    os.environ["MASTER_ADDR"] = workers_spec[0][1].split(":")[0]
+    os.environ["MASTER_PORT"] = workers_spec[0][1].split(":")[1]
+
+
+    def signal_handler(sig, frame):
+        print('You pressed Ctrl+C!')
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.pause()
 
     if rank != 0:
         # wait for rank0 to become ready.
