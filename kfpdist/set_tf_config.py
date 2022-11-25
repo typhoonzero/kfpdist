@@ -30,7 +30,7 @@ def set_dist_train_config(rank, nranks, step_name, port=9888):
 
     config.load_incluster_config()
     api = client.CustomObjectsApi()
-    
+
     worker_started = 0
     while worker_started != nranks:
         resource = api.get_namespaced_custom_object(
@@ -83,7 +83,6 @@ def set_dist_train_config(rank, nranks, step_name, port=9888):
         sys.exit(0)
 
     signal.signal(signal.SIGINT, signal_handler)
-    signal.pause()
 
     if rank != 0:
         # wait for rank0 to become ready.
